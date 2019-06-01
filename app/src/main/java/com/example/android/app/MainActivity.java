@@ -10,6 +10,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -19,62 +20,37 @@ import com.google.firebase.database.ValueEventListener;
 
 public class MainActivity extends AppCompatActivity {
     public TextView question;
-    public int num = 1;
-    public int crcanss = 0;
     public Button option1, option2, option3, option4;
-    public DatabaseReference ref;
     public DatabaseReference reference;
-    Handler handler=new Handler();
-    Thread t1;
-
+    //Thread t1;
+    public int num ;
+    public int crcanss ;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+         num = 1;
+          crcanss = 0;
         question = findViewById(R.id.question);
         option1 = findViewById(R.id.option1);
         option2 = findViewById(R.id.option2);
         option3 = findViewById(R.id.option3);
         reference = FirebaseDatabase.getInstance().getReference();
         option4 = findViewById(R.id.option4);
-        MyThread t=new MyThread();
-        t1=new Thread();
-        t1.start();
-
+        setLayout();
     }
-
-
-
-
-    public class MyThread implements Runnable {
-        DatabaseReference reference;
-        int num=1;
-
-
-
-        DatabaseReference ref;
-        public void MyThread(DatabaseReference reference)
-        {
-            this.reference=reference;
-        }
-        public void run() {
-
-            setLayout();
-
-        }
         public void setLayout() {
+            DatabaseReference ref;
             if (num > 2) {
 
+                Toast.makeText(this, "questions complete", Toast.LENGTH_SHORT).show();
             } else {
-                ref = reference.child("num");
+
+                ref = reference.child(String.valueOf(num));
                 num++;
                 ref.addValueEventListener(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull final DataSnapshot dataSnapshot) {
-
-                        runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
                                 {
                                     final Question qes = dataSnapshot.getValue(Question.class);
                                     question.setText(qes.getQuestion());
@@ -90,7 +66,6 @@ public class MainActivity extends AppCompatActivity {
                                             if (qes.getCrcans().equals(qes.getOption1())) {
                                                 option1.setBackgroundColor(Color.GREEN);
                                                 crcanss++;
-
                                             } else {
                                                 option1.setBackgroundColor(Color.RED);
                                                 if (qes.getCrcans().equals(qes.getOption2())) {
@@ -101,7 +76,7 @@ public class MainActivity extends AppCompatActivity {
                                                     option4.setBackgroundColor(Color.GREEN);
                                                 }
                                             }
-                                            
+
                                             setLayout();
 
 
@@ -127,8 +102,6 @@ public class MainActivity extends AppCompatActivity {
                                             }
 
                                             setLayout();
-
-
                                         }
 
                                     });
@@ -151,8 +124,6 @@ public class MainActivity extends AppCompatActivity {
                                             }
 
                                             setLayout();
-
-
                                         }
 
                                     });
@@ -179,10 +150,6 @@ public class MainActivity extends AppCompatActivity {
 
                                     });
                                 }
-
-                            }
-                        });
-
                     }
 
                     @Override
@@ -192,7 +159,7 @@ public class MainActivity extends AppCompatActivity {
                 });
             }
         }
-    }
+
 
 
 }
